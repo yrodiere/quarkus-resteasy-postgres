@@ -24,9 +24,9 @@ public class FilePart extends PanacheEntityBase implements Serializable {
     //examples: https://www.baeldung.com/jpa-join-column
     @ManyToOne(fetch = FetchType.LAZY)
             @JoinColumns({
-                    @JoinColumn(referencedColumnName = "idProperty1", name = "idProperty1"),
-                    @JoinColumn(referencedColumnName = "idProperty2", name = "idProperty2"),
-                    @JoinColumn(referencedColumnName = "id", name = "downloadId")
+                    @JoinColumn(referencedColumnName = "idProperty1", name = "idProperty1", insertable = false, updatable = false),
+                    @JoinColumn(referencedColumnName = "idProperty2", name = "idProperty2", insertable = false, updatable = false)
+//                    @JoinColumn(referencedColumnName = "id", name = "downloadId")
             })
     Download download;
 
