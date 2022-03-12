@@ -20,3 +20,5 @@ CREATE TABLE if not exists FilePart
     CONSTRAINT pk_filepart PRIMARY KEY (id),
     CONSTRAINT FK_FILEPART_ON_DOWNLOAD FOREIGN KEY (download_id) REFERENCES Download (id)
 );
+
+create sequence filepart_id_seq INCREMENT 1;
