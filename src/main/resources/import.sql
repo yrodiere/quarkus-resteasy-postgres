@@ -1,6 +1,6 @@
 set search_path = "public";
 
-CREATE TABLE Download
+CREATE TABLE if not exists Download
 (
     id          BIGSERIAL       NOT NULL,
     idProperty1 VARCHAR(255) NOT NULL,
@@ -10,7 +10,7 @@ CREATE TABLE Download
 );
 
 
-CREATE TABLE FilePart
+CREATE TABLE if not exists FilePart
 (
     id               BIGSERIAL NOT NULL,
     idProperty1      VARCHAR(255),
