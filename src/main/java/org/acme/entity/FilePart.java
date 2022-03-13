@@ -12,10 +12,6 @@ public class FilePart extends PanacheEntityBase implements Serializable {
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "filepart_id_seq")
     public Long id;
 
-    public String idProperty1;
-
-    public String idProperty2;
-
     public String filePartFilePath;
 
     //adds fk fields idProperty1, idProperty2 to FilePart table
@@ -24,8 +20,8 @@ public class FilePart extends PanacheEntityBase implements Serializable {
     //examples: https://www.baeldung.com/jpa-join-column
     @ManyToOne(fetch = FetchType.LAZY)
             @JoinColumns({
-                    @JoinColumn(referencedColumnName = "idProperty1", name = "idProperty1", insertable = false, updatable = false),
-                    @JoinColumn(referencedColumnName = "idProperty2", name = "idProperty2", insertable = false, updatable = false)
+                    @JoinColumn(referencedColumnName = "idProperty1", name = "idProperty1"),
+                    @JoinColumn(referencedColumnName = "idProperty2", name = "idProperty2")
 //                    @JoinColumn(referencedColumnName = "id", name = "downloadId")
             })
     Download download;
@@ -35,9 +31,7 @@ public class FilePart extends PanacheEntityBase implements Serializable {
     public FilePart() {
     }
 
-    public FilePart(String idProperty1, String idProperty2, String filePartFilePath) {
-        this.idProperty1 = idProperty1;
-        this.idProperty2 = idProperty2;
+    public FilePart(String filePartFilePath) {
         this.filePartFilePath = filePartFilePath;
     }
 }

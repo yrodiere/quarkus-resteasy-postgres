@@ -4,7 +4,7 @@ CREATE TABLE  if not exists  Download
     idProperty1 VARCHAR(255) NOT NULL,
     idProperty2 VARCHAR(255) NOT NULL,
     finished    BOOLEAN,
-    CONSTRAINT pk_download PRIMARY KEY (id)
+    CONSTRAINT pk_download PRIMARY KEY (idProperty1, idProperty2)
 );
 CREATE TABLE  if not exists  FilePart
 (

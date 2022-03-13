@@ -6,6 +6,7 @@ import org.acme.entity.FilePart;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
 
 import javax.enterprise.event.Observes;
+import javax.transaction.Transactional;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -29,16 +30,26 @@ public class DownloadSyncResource {
     @Produces(MediaType.TEXT_PLAIN)
     public String sync() {
         Download download = new Download("a", "b", false, List.of());
-        if(!download.isPersistent()) download.persist();
+        persist(download);
 
         Download download2 = new Download("a", "b", true, List.of(
-                new FilePart("a", "b", "/home/myfile.txt.part1"),
-                new FilePart("a", "b", "/home/myfile.txt.part2")
+                new FilePart("/home/myfile.txt.part1"),
+                new FilePart("/home/myfile.txt.part2")
         ));
-        download2.persist();
 
-        //TODO move to test like https://quarkus.io/guides/hibernate-orm-panache#mocking
+//        persist(download2);
+//        org.postgresql.util.PSQLException: ERROR: duplicate key value violates unique constraint "pk_download"
+//        Detail: Key (idproperty1, idproperty2)=(a, b) already exists.
 
-        return "Hello RESTEasy";
+        //TODO find download by  idProperty1 and idProperty1
+        // if download.isPersistent: download2 data |-> queried download entity
+
+        return "";
     }
+
+    @Transactional
+    public void persist(Download download){
+        download.persist();
+    }
+
 }

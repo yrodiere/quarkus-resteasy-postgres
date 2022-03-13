@@ -12,10 +12,10 @@ public class DownloadSyncResourceTest {
     @Test
     public void testHelloEndpoint() {
         given()
-          .when().get("/hello")
+          .when().get("/sync")
           .then()
              .statusCode(200)
-             .body(is("Hello RESTEasy"));
+             .body(is(""));
     }
 
 }

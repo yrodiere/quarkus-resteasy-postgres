@@ -8,6 +8,9 @@ public class DownloadId implements Serializable {
 
     private String idProperty2;
 
+    public DownloadId() {
+    }
+
     public DownloadId(String idProperty1, String idProperty2) {
         this.idProperty1 = idProperty1;
         this.idProperty2 = idProperty2;

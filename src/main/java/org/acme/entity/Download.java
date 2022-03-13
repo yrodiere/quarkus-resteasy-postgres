@@ -26,7 +26,7 @@ public class Download extends PanacheEntityBase {
     @Column
     public Boolean finished;
 
-    @OneToMany(mappedBy = "download")
+    @OneToMany(mappedBy = "download", cascade = CascadeType.ALL)
     public List<FilePart> filePartList;
 
     public Download(String idProperty1, String idProperty2, Boolean finished, List<FilePart> filePartList) {
