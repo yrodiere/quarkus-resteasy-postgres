@@ -36,6 +36,14 @@ public class Download extends PanacheEntityBase {
         this.filePartList = filePartList;
     }
 
+    public String getIdProperty1() {
+        return idProperty1;
+    }
+
+    public void setIdProperty1(String idProperty1) {
+        this.idProperty1 = idProperty1;
+    }
+
     public Download() {
     }
 }

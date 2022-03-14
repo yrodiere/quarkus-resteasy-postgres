@@ -30,6 +30,10 @@ public class DownloadSyncResource {
     @Produces(MediaType.TEXT_PLAIN)
     public String sync() {
         Download download = new Download("a", "b", false, List.of());
+
+        download.idProperty1 = "bla";               //test implicit setter
+        String idProperty1 = download.idProperty1;  //test implicit getter
+
         persist(download);
 
         Download download2 = new Download("a", "b", true, List.of(
