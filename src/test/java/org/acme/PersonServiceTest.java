@@ -18,7 +18,7 @@ public class PersonServiceTest {
      * io.quarkus.hibernate.orm.panache.PanacheEntityBase.update and implicit update by changing entity attributes
      */
     @Test
-    public void testCreatePerson() throws SystemException {
+    public void testCreatePerson() {
         service.createPerson();                 // Person created, firstname = 'Max', created in DB after this line
 
         Person person = Person.findById(1L);
