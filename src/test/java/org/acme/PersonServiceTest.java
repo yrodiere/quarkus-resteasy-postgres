@@ -21,16 +21,16 @@ public class PersonServiceTest {
     public void testCreatePerson() {
         service.createPerson();                 // Person created, firstname = 'Max', created in DB after this line
 
-        Person person = Person.findById(1L);
-        Person.updateFirstnameStatic();         //updates firstname: 'Max' -> 'Paul', updated in DB after this line
+        Person person = Person.findById(1L);    // returns created Person
+        Person.updateFirstnameStatic();         // updates firstname: 'Max' -> 'Paul', updated in DB after this line
 
-        Person person2 = Person.findById(1L);   //firstname = 'Max' ...WTF? Why is outdated Person returned instead of the updated one from db?
+        Person person2 = Person.findById(1L);   // returns created/not updated Person: firstname = 'Max' ...WTF?
+                                                // Why is outdated Person returned instead of the updated one from db?
 
-        person2.updateFirstname();              // firstname = 'Paul2' in entity, but NOT persisted in DB, so it is not working as described in the docu
+        person2.updateFirstname();              // firstname = 'Paul2' set in entity, but NOT persisted in DB, so it is not working as described in the docu
                                                 // in  'https://quarkus.io/guides/hibernate-orm-panache#most-useful-operations' by:
                                                 // "note that once persisted, you don't need to explicitly save your entity: all
                                                 // modifications are automatically persisted on transaction commit."
-
     }
 
 }
