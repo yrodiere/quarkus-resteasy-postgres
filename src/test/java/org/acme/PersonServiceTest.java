@@ -5,7 +5,8 @@ import org.acme.entity.Person;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
-import javax.transaction.SystemException;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
 public class PersonServiceTest {
@@ -19,18 +20,29 @@ public class PersonServiceTest {
      */
     @Test
     public void testCreatePerson() {
-        service.createPerson();                 // Person created, firstname = 'Max', created in DB after this line
+        String firstname = "Max";
+        String newFirstname = "Paul";
+        String newFirstname2 = "Paul2";
 
-        Person person = Person.findById(1L);    // returns created Person
-        Person.updateFirstnameStatic();         // updates firstname: 'Max' -> 'Paul', updated in DB after this line
+        service.createPerson(firstname);                    // Person created, firstname = 'Max', created in DB after this line
+        Person person = Person.findById(1L);                // returns created Person
+        assertEquals(firstname, person.firstname);
 
-        Person person2 = Person.findById(1L);   // returns created/not updated Person: firstname = 'Max' ...WTF?
-                                                // Why is outdated Person returned instead of the updated one from db?
+        Person.updateFirstnameStatic(newFirstname);         // updates firstname: 'Max' -> 'Paul', updated in DB after this line
+        Person personCached = Person.findById(1L);
+        assertEquals(firstname, personCached.firstname);
 
-        person2.updateFirstname();              // firstname = 'Paul2' set in entity, but NOT persisted in DB, so it is not working as described in the docu
-                                                // in  'https://quarkus.io/guides/hibernate-orm-panache#most-useful-operations' by:
-                                                // "note that once persisted, you don't need to explicitly save your entity: all
-                                                // modifications are automatically persisted on transaction commit."
+        Person personUpdated = Person.findByIdForce(1L);    // clear cached entity to force query of db to get updated Person
+        assertEquals(newFirstname, personUpdated.firstname);
+
+        personUpdated.updateFirstname(newFirstname2);       // FIXME person firstname not updated in db
+        service.updatePerson(personUpdated, newFirstname2); // FIXME person firstname not updated in db
+                                                            // firstname = 'Paul2' set in entity, but NOT persisted in DB, so it is not working as described in the docu
+                                                            // in  'https://quarkus.io/guides/hibernate-orm-panache#most-useful-operations' by:
+                                                            // "note that once persisted, you don't need to explicitly save your entity: all
+                                                            // modifications are automatically persisted on transaction commit."
+
+        String s="";
     }
 
 }

@@ -9,11 +9,16 @@ import javax.transaction.Transactional;
 @ApplicationScoped
 public class PersonService {
     @Transactional
-    public void createPerson() {
+    public void createPerson(String firstname) {
         Person p = new Person();
         p.id=1L;
-        p.firstname = "Max";
+        p.firstname = firstname;
         p.lastname = "Muster";
         p.persist();
+    }
+
+    @Transactional
+    public void updatePerson(Person person, String newFirstname){
+        person.firstname = newFirstname;
     }
 }

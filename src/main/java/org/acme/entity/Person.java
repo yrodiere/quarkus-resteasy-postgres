@@ -20,12 +20,17 @@ public class Person extends PanacheEntityBase {
     }
 
     @Transactional
-    public static void updateFirstnameStatic(){
-        update("firstname='Paul' where id=1");
+    public static void updateFirstnameStatic(String firstname){
+        update("firstname=?1 where id=1", firstname);
     }
 
     @Transactional
-    public void updateFirstname() {
-        firstname = "Paul2";
+    public void updateFirstname(String firstnameArg) {
+        firstname = firstnameArg;
+    }
+
+    public static Person findByIdForce(Long id){
+        getEntityManager().clear();
+        return findById(id);
     }
 }
