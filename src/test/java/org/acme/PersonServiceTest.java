@@ -42,6 +42,8 @@ public class PersonServiceTest {
                                                             // "note that once persisted, you don't need to explicitly save your entity: all
                                                             // modifications are automatically persisted on transaction commit."
 
+        service.findAndUpdatePerson(personUpdated, newFirstname2); // person firstname now finally updated in db
+
         String s="";
     }
 
