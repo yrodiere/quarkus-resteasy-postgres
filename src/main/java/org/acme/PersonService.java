@@ -3,6 +3,7 @@ package org.acme;
 
 import io.quarkus.hibernate.orm.panache.Panache;
 import org.acme.entity.Person;
+import org.acme.interceptor.TxLogger;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -30,9 +31,10 @@ public class PersonService {
 
     @Transactional
     public void findAndUpdatePerson(Person personArg, String newFirstname){
-        //FIXME shouldnt make this personArg managed again? "When using JPA, to reassociate a detached entity to an active EntityManager, you can use the merge operation."
+        //FIXME shouldnt this make personArg managed again? "When using JPA, to reassociate a detached entity to an active EntityManager, you can use the merge operation."
         // https://stackoverflow.com/questions/912659/what-is-the-proper-way-to-re-attach-detached-objects-in-hibernate/60661154#60661154
         Panache.getEntityManager().merge(personArg);
+
         log.info("PanacheEntityBase.getEntityManager().contains(personArg)="+ Panache.getEntityManager().contains(personArg));
         Person person = Person.findById(personArg.id);
         log.info("PanacheEntityBase.getEntityManager().contains(person)="+Panache.getEntityManager().contains(person));
