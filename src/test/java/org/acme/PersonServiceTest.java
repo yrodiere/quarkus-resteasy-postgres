@@ -1,11 +1,14 @@
 package org.acme;
 
+import io.quarkus.logging.Log;
 import io.quarkus.narayana.jta.QuarkusTransaction;
 import io.quarkus.test.junit.QuarkusTest;
 import org.acme.entity.Person;
 import org.junit.jupiter.api.Test;
 
 import javax.inject.Inject;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,6 +17,9 @@ public class PersonServiceTest {
 
     @Inject
     PersonService service;
+
+    @Inject
+    TransactionManager transactionManager;
 
     /*
      * update tests to understand inconsistent behaviour between
@@ -48,6 +54,53 @@ public class PersonServiceTest {
         service.findAndUpdatePerson2(1L, newFirstname3); // person firstname now finally updated in db
 
         String s="";
+    }
+    @Test
+    public void testUpdatePerson() {
+        logTX();
+
+        String firstname = "Max";
+        service.createPerson(firstname);
+
+
+        //TX MUST BE STARTED HERE, otherwise person object will be detached in PersonService.updatePerson method, thus not updated
+        QuarkusTransaction.begin();
+        logTX();
+        Person person = Person.findById(1L);
+        assertTrue(Person.getEntityManager().contains(person));
+        logEntityManagedState(person);
+
+        String newFirstname = "Paul";
+        service.updatePerson(person, newFirstname);
+        logEntityManagedState(person);
+        QuarkusTransaction.commit();
+
+        logTX();
+        logEntityManagedState(person);
+
+        //just after exiting the TX of this test method, the updated will be persisted to DB
+
+        QuarkusTransaction.begin();
+        logTX();
+        Person personUpdated = Person.findById(1L);
+        assertEquals(newFirstname, personUpdated.firstname);
+        QuarkusTransaction.rollback();
+    }
+
+    private static void logEntityManagedState(Person person) {
+        Log.info("Person object is managed: " + Person.getEntityManager().contains(person));
+    }
+
+    private void logTX() {
+        try {
+            if (transactionManager.getTransaction() != null) {
+                Log.info("tx: " + transactionManager.getTransaction().toString());
+            } else {
+                Log.info("tx: none");
+            }
+        } catch (SystemException e) {
+            throw new RuntimeException(e);
+        }
     }
 
 }
