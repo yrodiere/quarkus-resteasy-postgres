@@ -34,6 +34,7 @@ public class PersonService {
     public void updatePerson(Person person, String newFirstname){
         logTX();
         Log.info("Person object is managed: " + Person.getEntityManager().contains(person));
+        //FIXME this is weird: EntityEntry[org.acme.entity.Person#1](MANAGED)
         person.firstname = newFirstname;
     }
 

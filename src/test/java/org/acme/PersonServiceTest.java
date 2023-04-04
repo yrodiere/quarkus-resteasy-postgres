@@ -56,22 +56,33 @@ public class PersonServiceTest {
         String s="";
     }
     @Test
-    public void testUpdatePerson() {
-        logTX();
+    public void testUpdatePerson() throws SystemException {
+        assertNull(transactionManager.getTransaction());
 
         String firstname = "Max";
         service.createPerson(firstname);
+
+        Person person = Person.findById(1L);
+        assertTrue(Person.getEntityManager().contains(person)); //person is managed
+        assertNull(transactionManager.getTransaction());        //there is no active TX
+
+
+        String newFirstname = "Paul";
+        //person is a managed entity but without active TX. When passed to a transactional method, person is not managed/updated anymore
+        service.updatePerson(person, newFirstname);
+        assertNull(transactionManager.getTransaction());
+
 
 
         //TX MUST BE STARTED HERE, otherwise person object will be detached in PersonService.updatePerson method, thus not updated
         QuarkusTransaction.begin();
         logTX();
-        Person person = Person.findById(1L);
+        person = Person.findById(1L);
         assertTrue(Person.getEntityManager().contains(person));
         logEntityManagedState(person);
 
-        String newFirstname = "Paul";
-        service.updatePerson(person, newFirstname);
+        newFirstname = "Paul";
+        service.updatePerson(person, newFirstname); //This method "joins" the TX created in the test here by code
         logEntityManagedState(person);
         QuarkusTransaction.commit();
 
