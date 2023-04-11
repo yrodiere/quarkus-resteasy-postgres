@@ -51,19 +51,20 @@ public class MultiTests {
 
     @Test
     public void testMultithreading2() {
-        Stream.of(1,6)
+        List<Integer> results = Stream.of(1, 6)
                 .parallel()
-                .forEach(MultiTests::doublerFunction);
+                .map(MultiTests::doublerFunction)
+                .toList();
+        sout("all doubler function executions finished. Results: " +  results);
     }
 
     private static int doublerFunction(int i) {
-        sout("entering doubler");
+        sout("entering doubler, calculating double of i="+i);
         try {
             Thread.sleep(i*1000);
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         }
-        sout("Hello from doubler function");
         sout("exiting doubler");
         return i * 2;
     }
