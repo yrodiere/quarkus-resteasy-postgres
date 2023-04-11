@@ -3,10 +3,7 @@ package org.acme;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -51,10 +48,20 @@ public class MultiTests {
 
     @Test
     public void testMultithreading2() {
+
         List<Integer> results = Stream.of(1, 6)
-                .parallel()
-                .map(MultiTests::doublerFunction)
-                .toList();
+            .parallel()
+            .map(MultiTests::doublerFunction)
+            .toList();
+
+
+        //alternative with custom ForkJoinPool
+//        List<Integer> results = new ForkJoinPool(4).submit(() ->
+//                Stream.of(1, 6)
+//                        .parallel()
+//                        .map(MultiTests::doublerFunction)
+//        ).join().toList();;
+
         sout("all doubler function executions finished. Results: " +  results);
     }
 
