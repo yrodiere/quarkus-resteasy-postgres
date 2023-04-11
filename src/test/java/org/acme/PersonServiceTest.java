@@ -10,6 +10,14 @@ import javax.inject.Inject;
 import javax.transaction.SystemException;
 import javax.transaction.TransactionManager;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @QuarkusTest
@@ -112,6 +120,33 @@ public class PersonServiceTest {
         } catch (SystemException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    @Test
+    public void testMultithreading() {
+
+        final ExecutorService executor = Executors.newFixedThreadPool(3);
+        List<Integer> list = Arrays.asList(1, 2, 3);
+
+        List<CompletableFuture<Integer>> futures = list.stream()
+                .map(i -> CompletableFuture.supplyAsync(getIntegerSupplier(i), executor))
+                .toList();
+
+        List<Integer> results = futures.stream()
+                .map(CompletableFuture::join)
+                .toList();
+
+        StringBuilder sb = new StringBuilder();
+        results.forEach(i -> sb.append(i).append(","));
+        System.out.println(sb.toString());
+    }
+
+    private static Supplier<Integer> getIntegerSupplier(Integer i) {
+        return () -> {
+            // Perform parallel computation on separate thread
+            Log.info("Hello from supply async!");
+            return i * 2;
+        };
     }
 
 }
