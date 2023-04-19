@@ -50,4 +50,30 @@ public class PersonServiceTest {
         String s="";
     }
 
+    @Test
+    public void testEntityManagerAndTx(){
+        QuarkusTransaction.begin();
+            Person p = new Person();
+            p.id=1L;
+            p.firstname = "firstname";
+            p.lastname = "Muster";
+
+            assertFalse(Person.getEntityManager().contains(p));
+            Person.persist(p); //        p.persist();
+            assertTrue(Person.getEntityManager().contains(p));
+
+            Person personFound = Person.findById(p.id); //return Person from EntityManager as it is not yet persisted to DB
+        QuarkusTransaction.commit(); //persists Person to DB, flush/clear/close EntityManager
+        assertFalse(Person.getEntityManager().contains(p));
+
+        Person personFoundFromDB = Person.findById(p.id);
+        assertTrue(Person.getEntityManager().contains(personFoundFromDB));
+
+
+        QuarkusTransaction.begin();
+            personFoundFromDB = Person.findById(p.id);
+            assertTrue(Person.getEntityManager().contains(personFoundFromDB));
+        QuarkusTransaction.commit();
+    }
+
 }
