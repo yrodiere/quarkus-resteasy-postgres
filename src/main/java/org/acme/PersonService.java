@@ -2,12 +2,14 @@ package org.acme;
 
 
 import io.quarkus.hibernate.orm.panache.Panache;
+import io.quarkus.logging.Log;
 import org.acme.entity.Person;
-import org.acme.interceptor.TxLogger;
 import org.jboss.logging.Logger;
 
 import javax.enterprise.context.ApplicationScoped;
 import javax.inject.Inject;
+import javax.transaction.SystemException;
+import javax.transaction.TransactionManager;
 import javax.transaction.Transactional;
 
 @ApplicationScoped
@@ -15,8 +17,11 @@ public class PersonService {
     @Inject
     Logger log;
 
-    @Transactional
+    @Inject
+    TransactionManager transactionManager;
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void createPerson(String firstname) {
+        logTX();
         Person p = new Person();
         p.id=1L;
         p.firstname = firstname;
@@ -24,9 +29,25 @@ public class PersonService {
         p.persist();
     }
 
+    //BEWARE: person object stays only in MANAGED state, if we stay in the same transaction
     @Transactional
     public void updatePerson(Person person, String newFirstname){
+        logTX();
+        Log.info("Person object is managed: " + Person.getEntityManager().contains(person));
+        //FIXME this is weird: EntityEntry[org.acme.entity.Person#1](MANAGED)
         person.firstname = newFirstname;
+    }
+
+    private void logTX() {
+        try {
+            if (transactionManager.getTransaction() != null) {
+                Log.info("tx: " + transactionManager.getTransaction().toString());
+            } else {
+                Log.info("tx: none");
+            }
+        } catch (SystemException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
