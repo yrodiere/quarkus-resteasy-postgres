@@ -137,6 +137,7 @@ public class PersonServiceTest {
             Person.persist(p);
             assertTrue(isManagedEntity(p));
 
+            doInSameTX(p);
             doInNewTX(p);
 
             Person personFound = Person.findById(p.id); //returns Person from EntityManager as it is not yet persisted to DB
@@ -162,11 +163,20 @@ public class PersonServiceTest {
     }
 
     /*
+    just to demo that Person p is still managed by joining same tx of caller (-> same entity manager)
+    */
+    @Transactional
+    public void doInSameTX(Person p) {
+        assertTrue(isManagedEntity(p));
+    }
+
+    /*
     just to demo that Person p get detached when passed to new tx (-> new entity manager)
-     */
+    */
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void doInNewTX(Person p) {
         assertFalse(isManagedEntity(p));
     }
+
 
 }
