@@ -20,7 +20,7 @@ public class TxAndEntityManagerTest {
     TransactionManager transactionManager;
 
     @Test
-    public void testEntityManagerAndTx() throws SystemException {
+    public void test() throws SystemException {
         QuarkusTransaction.begin();
             Person p = new Person();
             p.id=1L;
