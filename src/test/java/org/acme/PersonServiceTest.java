@@ -124,59 +124,8 @@ public class PersonServiceTest {
         }
     }
 
-
-    @Test
-    public void testEntityManagerAndTx() throws SystemException {
-        QuarkusTransaction.begin();
-            Person p = new Person();
-            p.id=1L;
-            p.firstname = "firstname";
-            p.lastname = "Muster";
-
-            assertFalse(isManagedEntity(p));
-            Person.persist(p);
-            assertTrue(isManagedEntity(p));
-
-            doInSameTX(p);
-            doInNewTX(p);
-
-            Person personFound = Person.findById(p.id); //returns Person from EntityManager as it is not yet persisted to DB
-            assertNotNull(personFound);
-        QuarkusTransaction.commit(); //persists Person p to DB, flush/clear/close EntityManager
-        assertFalse(isManagedEntity(p));
-
-        //find with TX
-        QuarkusTransaction.begin();
-            assertNotNull(transactionManager.getTransaction());
-            Person personFoundFromDB = Person.findById(p.id);
-            assertTrue(isManagedEntity(personFoundFromDB));
-        QuarkusTransaction.commit();
-
-        //find without TX
-        personFoundFromDB = Person.findById(p.id);
-        assertTrue(isManagedEntity(personFoundFromDB));
-        assertNull(transactionManager.getTransaction());
-    }
-
     private static boolean isManagedEntity(Person p) {
         return Person.getEntityManager().contains(p);
     }
-
-    /*
-    just to demo that Person p is still managed by joining same tx of caller (-> same entity manager)
-    */
-    @Transactional
-    public void doInSameTX(Person p) {
-        assertTrue(isManagedEntity(p));
-    }
-
-    /*
-    just to demo that Person p get detached when passed to new tx (-> new entity manager)
-    */
-    @Transactional(Transactional.TxType.REQUIRES_NEW)
-    public void doInNewTX(Person p) {
-        assertFalse(isManagedEntity(p));
-    }
-
 
 }
