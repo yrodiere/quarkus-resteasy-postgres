@@ -36,7 +36,7 @@ public class TxAndEntityManagerTest {
 
             Person personFound = Person.findById(p.id); //returns Person from EntityManager as it is not yet persisted to DB
             assertNotNull(personFound);
-        QuarkusTransaction.commit(); //persists Person p to DB, flush/clear/close EntityManager
+        QuarkusTransaction.commit(); //flush/clear/close EntityManager -> Person persisted in DB,
         assertFalse(isManagedEntity(p));
 
         //find with TX
