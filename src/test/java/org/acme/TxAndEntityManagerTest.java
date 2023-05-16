@@ -47,9 +47,17 @@ public class TxAndEntityManagerTest {
         QuarkusTransaction.commit();
 
         //find without TX
+        logTX();
         personFoundFromDB = Person.findById(p.id);
+        Log.info("person string: " + personFoundFromDB.toString());
         assertTrue(isManagedEntity(personFoundFromDB));
         assertNull(transactionManager.getTransaction());
+
+        QuarkusTransaction.begin();
+            logTX();
+            Log.info("person string: " + Person.findById(p.id));
+            logPersonInSameTX(p.id); //call to demo that same query in same tx returns cached entity from entity manager
+        QuarkusTransaction.rollback();
     }
 
     private static boolean isManagedEntity(Person p) {
@@ -72,5 +80,23 @@ public class TxAndEntityManagerTest {
         assertFalse(isManagedEntity(p));
     }
 
+
+    @Transactional
+    public void logPersonInSameTX(Long pid) {
+        logTX();
+        Log.info("person string: " + Person.findById(pid)); //Person entity returned from entity manager NOT from DB
+    }
+
+    private void logTX() {
+        try {
+            if (transactionManager.getTransaction() != null) {
+                Log.info("tx: " + transactionManager.getTransaction().toString());
+            } else {
+                Log.info("tx: none");
+            }
+        } catch (SystemException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 }
