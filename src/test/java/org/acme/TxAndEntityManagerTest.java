@@ -79,13 +79,46 @@ public class TxAndEntityManagerTest {
             p.id=1L;
             p.firstname = "firstname";
             p.lastname = "Muster";
+            p.persist();
         QuarkusTransaction.commit();
 
-        Person foundPerson = Person.findById(p.id);
-        foundPerson.firstname= "firstnameUpdated";
+        QuarkusTransaction.begin();
+            Person personFoundDB = Person.<Person>findByIdOptional(p.id).get();
+            Person personFoundEM = Person.<Person>findByIdOptional(p.id).get();
+            Person personFoundDB2 = findInNewTX(p.id);
+        QuarkusTransaction.rollback();
 
-        Person.getEntityManager().refresh(foundPerson);
 
+//        Person latestPerson = getLatestPerson(1L);
+//        Person foundPerson = Person.findById(p.id);
+//        foundPerson.firstname= "firstnameUpdated";
+//
+//        Person.getEntityManager().refresh(foundPerson);
+
+    }
+
+    Person findPersonNotCached1(Long pid) {
+        Person person = Person.findById(pid);
+        Person.getEntityManager().detach(person); //remove from EM -> entity unmanaged to prevent caching
+        return person;
+    }
+
+    Person findPersonNotCached2(Long pid) {
+        Person person = Person.findById(pid);
+        Person.getEntityManager().refresh(person); // force db query
+        return person;
+    }
+
+    Person findPersonNotCached3(Long pid) {
+        Person.getEntityManager().clear();
+        Person person = Person.findById(pid);
+        return person;
+    }
+
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    Person findPersonNotCached4(Long pid) {
+        Person person = Person.findById(pid);
+        return person;
     }
 
 
@@ -107,6 +140,11 @@ public class TxAndEntityManagerTest {
     @Transactional(Transactional.TxType.REQUIRES_NEW)
     public void doInNewTX(Person p) {
         assertFalse(isManagedEntity(p));
+    }
+
+    @Transactional(Transactional.TxType.REQUIRES_NEW)
+    public Person findInNewTX(Long p) {
+        return Person.<Person>findByIdOptional(p).get();
     }
 
 
