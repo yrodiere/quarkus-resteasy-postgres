@@ -48,10 +48,13 @@ public class TxAndEntityManagerTest {
             //TODO update person in db  by separate tx here to demo that personFoundFromEM is returned fom EM (cache)
 
             Person personFoundFromEM = Person.findById(p.id); //returns cached person from entitymanager
-
             Person.getEntityManager().detach(personFoundFromDB);
             assertFalse(isManagedEntity(personFoundFromDB));
             Person personFoundFromDB3 = Person.findById(p.id); //query to db
+            //TODO update person in db  by separate tx here to demo that personFoundFromEM is returned fom EM (cache)
+            Person personFoundFromEM2 = Person.findById(p.id); //returns cached person from entitymanager
+            assertTrue(personFoundFromEM2 == personFoundFromDB3);
+            Person.getEntityManager().refresh(personFoundFromDB3);
         QuarkusTransaction.commit();
 
         //find without TX
