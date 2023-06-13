@@ -2,11 +2,11 @@ package org.acme;
 
 import io.quarkus.hibernate.orm.panache.PanacheEntityBase;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.transaction.SystemException;
-import javax.transaction.Transactional;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.transaction.SystemException;
+import jakarta.transaction.Transactional;
 
 @Entity
 public class Person extends PanacheEntityBase {
